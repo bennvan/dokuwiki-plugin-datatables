@@ -7,7 +7,7 @@
  * Copyright (C) 2015-2020, Giuseppe Di Terlizzi
  */
 
-jQuery(document).ready(function () {
+jquery_data_tables_script.addEventListener('load', function () {
 
     var WRAP_TABLES_SELECTOR = '.page div.dt-wrapper table',
         ALL_TABLES_SELECTOR = '.page table thead';
@@ -44,7 +44,7 @@ jQuery(document).ready(function () {
 
         if (jQuery('thead > tr', $target_table).length && !jQuery('tbody', $target_table).find('[rowspan], [colspan]').length) {
             $target_table.attr('width', '100%');
-            $target_table.DataTable(dt_config);
+            $target_table.DataTable(dt_config);         
         }
 
     }

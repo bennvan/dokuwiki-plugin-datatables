@@ -165,12 +165,20 @@ class action_plugin_datatables extends DokuWiki_Action_Plugin
                 //$dt_scripts[] = "$base_url/datatables.net-responsive/js/dataTables.responsive.min.js";
         }
 
-        foreach ($dt_scripts as $script) {
+        foreach ($dt_scripts as $idx=>$script) {
             $event->data['script'][] = array(
                 'type'  => 'text/javascript',
                 'src'   => $script,
                 'defer' => 'defer',
                 '_data' => null,
+            );
+            if ($idx !== 0) continue;
+            $event->data['script'][] = array(
+                'type'  => 'text/javascript',
+                'src'   => $script,
+                'defer' => 'defer',
+                '_data' => null,
+                'id'    => 'jquery_data_tables_script'
             );
         }
 
