@@ -166,6 +166,7 @@ class action_plugin_datatables extends DokuWiki_Action_Plugin
                 //$dt_scripts[] = "$base_url/datatables.net-responsive/js/dataTables.responsive.min.js";
         }
 
+        $last = count($dt_scripts)-1;
         foreach ($dt_scripts as $idx=>$script) {
             $event->data['script'][] = array(
                 'type'  => 'text/javascript',
@@ -173,7 +174,7 @@ class action_plugin_datatables extends DokuWiki_Action_Plugin
                 'defer' => 'defer',
                 '_data' => null,
             );
-            if ($idx !== 0) continue;
+            if ($idx !== $last) continue;
             $event->data['script'][] = array(
                 'type'  => 'text/javascript',
                 'src'   => $script,
