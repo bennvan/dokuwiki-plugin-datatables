@@ -6,50 +6,18 @@
  * License   GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * Copyright (C) 2015-2020, Giuseppe Di Terlizzi
  */
-dt_script = document.getElementById('jquery_data_tables_script');
 
-if (dt_script) {
-    dt_script.addEventListener('load', function () {
+ (function() {
+    dt_script = document.getElementById('jquery_data_tables_script');
+    if (dt_script) {
+        dt_script.addEventListener('load', select_datatables);
+    }
 
+    function select_datatables() {
         var WRAP_TABLES_SELECTOR = '.page div.dt-wrapper table',
             ALL_TABLES_SELECTOR = '.page table thead';
 
         var $wrap_tables = jQuery(WRAP_TABLES_SELECTOR);
-
-        function init_datatables($target_table, dt_config) {
-
-            console.debug(dt_config);
-
-            var headerRows = dt_config.headerRows;
-            if (headerRows) {
-
-                var $thead = jQuery('thead', $target_table),
-                    $tbody = jQuery('tbody', $target_table),
-                    missingThead = $thead.length === 0;
-
-                headerRows -= $thead.children().length;
-
-                if (missingThead) {
-                    $thead = jQuery('<thead>');
-                }
-
-                while (headerRows > 0) {
-                    headerRows--;
-                    $thead.append($tbody.children().first());
-                }
-
-                if (missingThead) {
-                    $target_table.prepend($thead);
-                }
-
-            }
-
-            if (jQuery('thead > tr', $target_table).length && !jQuery('tbody', $target_table).find('[rowspan], [colspan]').length) {
-                $target_table.attr('width', '100%');
-                $target_table.DataTable(dt_config);         
-            }
-
-        }
 
         if ('plugin' in JSINFO
             && 'datatables' in JSINFO.plugin) {
@@ -80,10 +48,42 @@ if (dt_script) {
                     init_datatables($target_table, dt_config);
 
                 });
+            }
+        }
+    }
 
+    function init_datatables($target_table, dt_config) {
+
+        console.debug(dt_config);
+
+        var headerRows = dt_config.headerRows;
+        if (headerRows) {
+
+            var $thead = jQuery('thead', $target_table),
+                $tbody = jQuery('tbody', $target_table),
+                missingThead = $thead.length === 0;
+
+            headerRows -= $thead.children().length;
+
+            if (missingThead) {
+                $thead = jQuery('<thead>');
+            }
+
+            while (headerRows > 0) {
+                headerRows--;
+                $thead.append($tbody.children().first());
+            }
+
+            if (missingThead) {
+                $target_table.prepend($thead);
             }
 
         }
 
-    });
-};
+        if (jQuery('thead > tr', $target_table).length && !jQuery('tbody', $target_table).find('[rowspan], [colspan]').length) {
+            $target_table.attr('width', '100%');
+            $target_table.DataTable(dt_config);         
+        }
+
+    }
+})();
