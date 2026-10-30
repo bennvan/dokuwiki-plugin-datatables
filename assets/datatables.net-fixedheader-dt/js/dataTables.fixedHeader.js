@@ -745,7 +745,8 @@ $.extend(FixedHeader.prototype, {
 			position.tfootHeight = tfoot.outerHeight();
 		}
 		else {
-			position.tfootTop = position.tbodyTop + tbody.outerHeight();
+			// Use the visible scroll viewport, not the height of all hidden rows.
+			position.tfootTop = position.tbodyTop + position.tbodyHeight;
 			position.tfootBottom = position.tfootTop;
 			position.tfootHeight = position.tfootTop;
 		}
