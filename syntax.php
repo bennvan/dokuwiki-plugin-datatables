@@ -97,6 +97,9 @@ class syntax_plugin_datatables extends DokuWiki_Syntax_Plugin
                     }
                 }
 
+                // Preserve the custom default, allowing each table to opt out.
+                if (!isset($xml['scroll-x'])) $xml['scroll-x'] = 'true';
+
                 foreach ($xml->attributes() as $key => $value) {
                     $html5_data[] = sprintf("data-%s='%s'", $key, str_replace("'", "&apos;", (string)$value));
                 }

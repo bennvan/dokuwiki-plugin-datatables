@@ -38,9 +38,9 @@ class action_plugin_datatables extends DokuWiki_Action_Plugin
 
         // default config
         $datatables_config = [
-            'config' => [
-                'dom' => 'lBfrtip'
-            ],
+            // Let the integration supply its normal layout. Pages can opt into
+            // the Buttons toolbar with dom="Bfrtip", as before.
+            'config' => [],
             'enableForAllTables' => $this->getConf('enableForAllTables'),
         ];
 
@@ -76,15 +76,16 @@ class action_plugin_datatables extends DokuWiki_Action_Plugin
 
         $dt_scripts[] = "$base_url/datatables.net/js/jquery.dataTables.min.js";
 
-        $dt_scripts[] = "$base_url/datatables.net-fixedheader-dt/js/fixedHeader.dataTables.min.js";
+        $dt_scripts[] = "$base_url/datatables.net-fixedheader-dt/js/dataTables.fixedHeader.min.js";
         $dt_styles[] = "$base_url/datatables.net-fixedheader-dt/css/fixedHeader.dataTables.min.css";
 
-        $dt_scripts[] = "$base_url/datatables.net-fixedcolumns-dt/js/fixedColumns.dataTables.min.js";
+        $dt_scripts[] = "$base_url/datatables.net-fixedcolumns-dt/js/dataTables.fixedColumns.min.js";
         $dt_styles[] = "$base_url/datatables.net-fixedcolumns-dt/css/fixedColumns.dataTables.min.css";
 
         $dt_scripts[] = "$base_url/datatables.net-buttons/js/dataTables.buttons.min.js";
         $dt_scripts[] = "$base_url/datatables.net-buttons/js/buttons.html5.min.js";
         $dt_scripts[] = "$base_url/datatables.net-buttons/js/buttons.print.min.js";
+        $dt_scripts[] = "$base_url/datatables.net-buttons/js/buttons.colVis.min.js";
 
         $dt_scripts[] = "$base_url/jszip/jszip.min.js";
         $dt_scripts[] = "$base_url/pdfmake/pdfmake.min.js";
@@ -104,13 +105,19 @@ class action_plugin_datatables extends DokuWiki_Action_Plugin
                 $dt_styles[] = "$base_url/datatables.net-buttons/css/buttons.jqueryui.min.css";
         }
 
-        foreach ($dt_scripts as $script) {
-            $event->data['script'][] = [
+        $last = count($dt_scripts) - 1;
+        foreach ($dt_scripts as $index => $script) {
+            $script_attributes = [
                 'type' => 'text/javascript',
                 'src' => $script,
                 'defer' => 'defer',
                 '_data' => null,
             ];
+            // Mark the final dependency without loading it a second time.
+            if ($index === $last) {
+                $script_attributes['id'] = 'jquery_data_tables_script';
+            }
+            $event->data['script'][] = $script_attributes;
         }
 
         foreach ($dt_styles as $style) {
@@ -130,7 +137,7 @@ class action_plugin_datatables extends DokuWiki_Action_Plugin
     protected function getLangPath()
     {
         global $conf;
-        [$lang, $dialect] = array_pad(explode('-', $conf['lang'], 2), 2, null);
+        [$lang, $dialect] = array_pad(explode('-', $conf['lang'], 2), 2, '');
         $dialect = strtoupper($dialect);
 
         // exact match with dialect
