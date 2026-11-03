@@ -100,11 +100,31 @@ class syntax_plugin_datatables extends DokuWiki_Syntax_Plugin
                 // Preserve the custom default, allowing each table to opt out.
                 if (!isset($xml['scroll-x'])) $xml['scroll-x'] = 'true';
 
+                $styles = [];
                 foreach ($xml->attributes() as $key => $value) {
-                    $html5_data[] = sprintf("data-%s='%s'", $key, str_replace("'", "&apos;", (string)$value));
+                    $value = (string) $value;
+                    if (in_array($key, ['plain', 'striped'], true)) {
+                        $value = strtolower(trim($value));
+                        if (!in_array($value, ['true', 'false'], true)) continue;
+                    }
+                    if ($key === 'border') {
+                        $value = strtolower(trim($value));
+                        if (!in_array($value, ['true', 'false'], true)) {
+                            // Allow colour names and hex values, never CSS declarations.
+                            if (!preg_match('/^(?:[a-z]+|#(?:[a-f0-9]{3}|[a-f0-9]{6}))$/D', $value)) continue;
+                            $styles[] = '--dt-border-color: ' . $value;
+                        }
+                    }
+                    if ($key === 'header-background') {
+                        // A colour value only, never arbitrary CSS from page text.
+                        if (!preg_match('/^#(?:[a-f0-9]{3}|[a-f0-9]{6})$/iD', $value)) continue;
+                        $styles[] = '--dt-header-background: ' . $value;
+                    }
+                    $html5_data[] = sprintf("data-%s='%s'", $key, hsc($value));
                 }
 
-                $renderer->doc .= sprintf('<div class="dt-wrapper" %s>', implode(' ', $html5_data));
+                $style = $styles ? ' style="' . hsc(implode('; ', $styles)) . '"' : '';
+                $renderer->doc .= sprintf('<div class="dt-wrapper" %s%s>', implode(' ', $html5_data), $style);
                 return true;
 
             case DOKU_LEXER_EXIT:

@@ -1,0 +1,77 @@
+/* Plain tables use native overflow instead of DataTables' scrolling DOM. */
+.dt-wrapper[data-plain="true"] {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.dt-wrapper[data-plain="true"][data-scroll-x="true"] {
+    overflow-x: auto;
+}
+
+.dt-wrapper[data-plain="true"] table {
+    width: 100%;
+}
+
+/* Allow content to wrap before resorting to horizontal scrolling. */
+.dt-wrapper[data-plain="true"] table th,
+.dt-wrapper[data-plain="true"] table td,
+.dt-wrapper[data-plain="true"] > .table-responsive th,
+.dt-wrapper[data-plain="true"] > .table-responsive td {
+    white-space: normal;
+}
+
+/* One scroll container, even before Bootstrap's integration script runs. */
+.dt-wrapper[data-plain="true"] > .table-responsive {
+    overflow: visible;
+    border: 0;
+}
+
+/* Heading cells include ^ labels down the side, not just a thead row. */
+.dt-wrapper[data-header-background] table th,
+table.dt-custom-header th {
+    background-color: var(--dt-header-background);
+}
+
+/* Explicit presentation options also work before JavaScript loads. */
+.dt-wrapper[data-striped="false"] table > tbody > tr:nth-of-type(odd) {
+    background-color: transparent;
+}
+
+.dt-wrapper[data-striped="true"] table > tbody > tr:nth-of-type(odd) {
+    background-color: #f9f9f9;
+}
+
+.dt-wrapper[data-border]:not([data-border="false"]) table,
+.dt-wrapper[data-border]:not([data-border="false"]) table > thead > tr > th,
+.dt-wrapper[data-border]:not([data-border="false"]) table > thead > tr > td,
+.dt-wrapper[data-border]:not([data-border="false"]) table > tbody > tr > th,
+.dt-wrapper[data-border]:not([data-border="false"]) table > tbody > tr > td,
+.dt-wrapper[data-border]:not([data-border="false"]) table > tfoot > tr > th,
+.dt-wrapper[data-border]:not([data-border="false"]) table > tfoot > tr > td,
+table.dt-bordered,
+table.dt-bordered > thead > tr > th,
+table.dt-bordered > thead > tr > td,
+table.dt-bordered > tbody > tr > th,
+table.dt-bordered > tbody > tr > td,
+table.dt-bordered > tfoot > tr > th,
+table.dt-bordered > tfoot > tr > td {
+    border: 1px solid var(--dt-border-color, #ddd);
+    border-collapse: collapse;
+}
+
+.dt-wrapper[data-border="false"] table,
+.dt-wrapper[data-border="false"] table > thead > tr > th,
+.dt-wrapper[data-border="false"] table > thead > tr > td,
+.dt-wrapper[data-border="false"] table > tbody > tr > th,
+.dt-wrapper[data-border="false"] table > tbody > tr > td,
+.dt-wrapper[data-border="false"] table > tfoot > tr > th,
+.dt-wrapper[data-border="false"] table > tfoot > tr > td,
+table.dt-no-border,
+table.dt-no-border > thead > tr > th,
+table.dt-no-border > thead > tr > td,
+table.dt-no-border > tbody > tr > th,
+table.dt-no-border > tbody > tr > td,
+table.dt-no-border > tfoot > tr > th,
+table.dt-no-border > tfoot > tr > td {
+    border: 0;
+}

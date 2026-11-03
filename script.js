@@ -29,6 +29,35 @@
          * @param {object} dt_config DataTable configuration
          */
         function init_datatables($target_table, dt_config) {
+            // These wrapper options also apply to ordinary (non-interactive)
+            // tables. Keep them out of DataTables' own configuration.
+            const plain = dt_config.plain === true;
+            if (typeof dt_config.striped === 'boolean') {
+                $target_table.toggleClass('table-striped', dt_config.striped);
+            }
+            const borderColour = typeof dt_config.border === 'string' &&
+                /^(?:[a-z]+|#(?:[a-f0-9]{3}|[a-f0-9]{6}))$/i.test(dt_config.border);
+            if (typeof dt_config.border === 'boolean' || borderColour) {
+                const bordered = dt_config.border !== false;
+                $target_table.toggleClass('table-bordered dt-bordered', bordered)
+                    .toggleClass('dt-no-border', !bordered);
+                // Preserve custom borders when DataTables clones the header.
+                if (borderColour) $target_table.css('--dt-border-color', dt_config.border);
+            }
+            if (dt_config.striped === false) {
+                $target_table.removeClass('stripe');
+                dt_config.stripeClasses = [];
+            }
+            if (typeof dt_config.headerBackground === 'string' &&
+                /^#(?:[a-f0-9]{3}|[a-f0-9]{6})$/i.test(dt_config.headerBackground)) {
+                // Keep the colour on the table too, for cloned scrolling/fixed headers.
+                $target_table.addClass('dt-custom-header')
+                    .css('--dt-header-background', dt_config.headerBackground);
+            }
+            for (const option of ['plain', 'striped', 'border', 'headerBackground']) {
+                delete dt_config[option];
+            }
+            if (plain) return;
             if (jQuery.fn.dataTable.isDataTable($target_table[0])) return;
 
             // adjust header rows if requested
@@ -82,7 +111,7 @@
         if ($wrap_tables.length) {
             $wrap_tables.each(function () {
                 const $target_table = jQuery(this);
-                const wrap_config = jQuery(this).parents('.dt-wrapper').data();
+                const wrap_config = jQuery(this).closest('.dt-wrapper').data();
                 const dt_config = jQuery.extend(true, {}, JSINFO.plugin.datatables.config, wrap_config);
                 init_datatables($target_table, dt_config);
             });
