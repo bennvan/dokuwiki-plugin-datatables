@@ -8,6 +8,7 @@
  */
 class syntax_plugin_datatables extends DokuWiki_Syntax_Plugin
 {
+    private $pdfStart = null;
 
     /** @inheritdoc */
     public function getType()
@@ -78,6 +79,8 @@ class syntax_plugin_datatables extends DokuWiki_Syntax_Plugin
 
             case DOKU_LEXER_ENTER:
 
+                $this->pdfStart = $renderer instanceof renderer_plugin_dw2pdf ? strlen($renderer->doc) : null;
+
                 $html5_data = array();
                 $xml = @simplexml_load_string(str_replace('>', '/>', $match));
 
@@ -129,6 +132,12 @@ class syntax_plugin_datatables extends DokuWiki_Syntax_Plugin
 
             case DOKU_LEXER_EXIT:
                 $renderer->doc .= '</div>';
+                if ($renderer instanceof renderer_plugin_dw2pdf && $this->pdfStart !== null) {
+                    require_once __DIR__ . '/PdfTable.php';
+                    $renderer->doc = substr($renderer->doc, 0, $this->pdfStart)
+                        . \dokuwiki\plugin\datatables\PdfTable::style(substr($renderer->doc, $this->pdfStart));
+                    $this->pdfStart = null;
+                }
                 return true;
 
             case DOKU_LEXER_UNMATCHED:
